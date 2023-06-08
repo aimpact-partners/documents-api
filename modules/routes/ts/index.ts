@@ -1,9 +1,10 @@
-import {StoreKnowledge} from './routes/store';
-import {UploaderDocuments} from './routes/uploader';
+import {upload} from './upload';
+import {embedding} from './routes/embedding';
+import {uploader} from './routes/uploader';
 
 export /*bundle*/
 function routes(app) {
 	app.get('/', (req, res) => res.send('AImpact Documents http server'));
-	new StoreKnowledge(app);
-	new UploaderDocuments(app);
+	app.post('/embedding', embedding);
+	app.post('/upload', upload.array('file'), uploader);
 }
