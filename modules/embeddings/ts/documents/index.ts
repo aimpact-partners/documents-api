@@ -8,7 +8,7 @@ import {downloadFiles} from './download';
 export /*bundle*/ class DocsManager {
 	#splitter = new CharacterTextSplitter();
 
-	#path;
+	#path: string;
 	get path() {
 		return this.#path;
 	}
@@ -18,10 +18,7 @@ export /*bundle*/ class DocsManager {
 	}
 
 	async prepare(path: string, metadata = {}) {
-		if (!path) {
-			console.error('path not defined');
-			return;
-		}
+		if (!path) return {status: false, error: 'path not defined'};
 
 		this.#path = path.replace(/\//g, '\\');
 		const tempPath = await downloadFiles(this.#path);
@@ -32,5 +29,7 @@ export /*bundle*/ class DocsManager {
 		});
 		this.#items = await loader.loadAndSplit(this.#splitter);
 		this.#items.forEach(item => (item.metadata = Object.assign(item.metadata, metadata)));
+
+		return {status: true};
 	}
 }

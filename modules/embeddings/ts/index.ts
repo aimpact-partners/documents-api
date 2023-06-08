@@ -17,7 +17,7 @@ export /*bundle*/ class EmbeddingsAPI {
 	}
 
 	async update(path: string, metadata) {
-		await this.#documents.prepare(path, metadata);
-		return this.#embeddings.update();
+		const response = await this.#documents.prepare(path, metadata);
+		return !response.status ? response : await this.#embeddings.update();
 	}
 }
