@@ -23,12 +23,7 @@ export /*bundle*/ class DocsManager {
 			return;
 		}
 
-		console.log('prepare 11', path);
-
 		this.#path = path.replace(/\//g, '\\');
-
-		console.log(10, this.#path);
-
 		const tempPath = await downloadFiles(this.#path);
 		const loader = new DirectoryLoader(tempPath, {
 			'.docx': path => new DocxLoader(path),

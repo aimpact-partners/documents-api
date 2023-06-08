@@ -15,7 +15,6 @@ export const uploader = async function (req, res) {
 			// @ts-ignore
 			const {path, originalname, mimetype} = file;
 
-			console.log('file', file);
 			const name = `${generateCustomName(originalname)}${getExtension(mimetype)}`;
 			const dest = join(project, container, topic, name);
 
