@@ -1,38 +1,32 @@
-import { Storage } from "@google-cloud/storage";
-import * as os from "os";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "./credentials";
-import * as fs from "fs";
-import * as path from "path";
+import {Storage} from '@google-cloud/storage';
+import {initializeApp} from 'firebase/app';
+import {firebaseConfig} from './credentials';
 
 export class FilestoreFile {
-  private app;
-  private storage;
+	private app;
+	private storage;
 
-  constructor() {
-    this.app = initializeApp(firebaseConfig);
-    this.storage = new Storage();
-  }
+	constructor() {
+		this.app = initializeApp(firebaseConfig);
+		this.storage = new Storage();
+	}
 
-  async upload(path: string, destination: string): Promise<string> {
-    const bucketName = firebaseConfig.storageBucket;
-    await this.storage.bucket(bucketName).upload(path, { destination });
+	async upload(path: string, destination: string): Promise<string> {
+		const bucketName = firebaseConfig.storageBucket;
+		await this.storage.bucket(bucketName).upload(path, {destination});
+		return destination;
+	}
 
-    console.log("bucket upload ", destination);
+	async getBucketFiles(prefix) {
+		try {
+			const bucketName = firebaseConfig.storageBucket;
+			const bucket = this.storage.bucket(bucketName);
+			let [files] = await bucket.getFiles({prefix});
 
-    return destination;
-  }
-
-  /**
-   *
-   * @deprecated
-   */
-  async write(fileUploaded, filename: string, name: string = ""): Promise<string> {
-    const bucketName = firebaseConfig.storageBucket;
-    const file = this.storage.bucket(bucketName).file(filename);
-    const tempFilePath = path.join(os.tmpdir(), name);
-    fs.promises.writeFile(tempFilePath, fileUploaded.buffer);
-
-    return this.upload(tempFilePath, filename);
-  }
+			files = files.map(file => file.name);
+			return {status: true, data: {files}};
+		} catch (e) {
+			return {status: false, error: e.message};
+		}
+	}
 }
