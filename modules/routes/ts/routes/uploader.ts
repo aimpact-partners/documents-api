@@ -28,8 +28,8 @@ export const uploader = async function (req, res) {
 			const { path, originalname, mimetype } = file;
 
 			const name = `${generateCustomName(originalname)}${getExtension(mimetype)}`;
-			const dest = join(project, type, userId, container, name);
-
+			let dest = join(project, userId, type, container, name);
+			dest.replace(/\\/g, '/');
 			const fileManager = new FilestoreFile();
 			promises.push(fileManager.upload(path, dest));
 		});

@@ -1,6 +1,6 @@
-import {Storage} from '@google-cloud/storage';
-import {initializeApp} from 'firebase/app';
-import {firebaseConfig} from './credentials';
+import { Storage } from '@google-cloud/storage';
+import { initializeApp } from 'firebase/app';
+import { firebaseConfig } from './credentials';
 
 export class FilestoreFile {
 	private app;
@@ -13,20 +13,31 @@ export class FilestoreFile {
 
 	async upload(path: string, destination: string): Promise<string> {
 		const bucketName = firebaseConfig.storageBucket;
-		await this.storage.bucket(bucketName).upload(path, {destination});
+		await this.storage.bucket(bucketName).upload(path, { destination });
 		return destination;
 	}
 
-	async filterFiles(prefix) {
+	async filterFiles(prefix: string | undefined) {
 		try {
 			const bucketName = firebaseConfig.storageBucket;
 			const bucket = this.storage.bucket(bucketName);
-			let [files] = await bucket.getFiles({prefix});
+			const specs = prefix ? { prefix } : {};
+			let [files] = await bucket.getFiles(specs);
 
-			files = files.map(file => file.name);
-			return {status: true, data: {files}};
+			return files;
 		} catch (e) {
-			return {status: false, error: e.message};
+			return { status: false, error: e.message };
+		}
+	}
+
+	async deleteFiles(prefix: string | undefined) {
+		try {
+			const files = await this.filterFiles(prefix);
+			console.log(13, files);
+			await Promise.all(files.map(file => file.delete()));
+			return true;
+		} catch (e) {
+			return { status: false, error: e.message };
 		}
 	}
 }
