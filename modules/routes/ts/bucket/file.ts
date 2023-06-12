@@ -17,7 +17,7 @@ export class FilestoreFile {
 		return destination;
 	}
 
-	async getBucketFiles(prefix) {
+	async filterFiles(prefix) {
 		try {
 			const bucketName = firebaseConfig.storageBucket;
 			const bucket = this.storage.bucket(bucketName);
