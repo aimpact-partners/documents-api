@@ -1,8 +1,9 @@
-import { FilestoreFile } from '../bucket/file';
-import { join } from 'path';
-export const list = async function (req, res) {
+import {FilestoreFile} from '../bucket/file';
+import {join} from 'path';
+
+export /*bundle*/ const list = async function (req, res) {
 	const fileManager = new FilestoreFile();
-	const { path = '', project, type, userId } = req.query;
+	const {path = '', project, type, userId} = req.query;
 	const TYPES = Object.freeze({
 		file: 'files',
 		files: 'files',
@@ -35,17 +36,17 @@ export const list = async function (req, res) {
 
 			if (name.length > 1) {
 				const folder = folders.has(name) ? folders.get(name[0]) : [];
-				folder.push({ name: name[name.length - 1], path: file.name });
+				folder.push({name: name[name.length - 1], path: file.name});
 				folders.set(name[0], folder);
 				return;
 			}
-			folders.get('general').push({ name: name[0], path: file.name });
+			folders.get('general').push({name: name[0], path: file.name});
 			return;
 		});
 		const files = [];
-		folders.forEach((items, folder) => files.push({ name: folder, items }));
+		folders.forEach((items, folder) => files.push({name: folder, items}));
 
-		return res.json({ status: true, data: { files } });
+		return res.json({status: true, data: {files}});
 	} catch (error) {
 		console.error(error);
 		res.status(500).send('Error saving embeds');
