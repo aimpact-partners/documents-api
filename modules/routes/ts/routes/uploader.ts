@@ -1,7 +1,8 @@
 import { join } from 'path';
 import { FilestoreFile } from '../bucket/file';
-import { generateCustomName } from './utils/generate-name';
+import { storeKnowledgeBox } from './knowledge-box';
 import { getExtension } from './utils/get-extension';
+import { generateCustomName } from './utils/generate-name';
 import { EmbeddingsAPI } from '@aimpact/documents-api/embeddings';
 const model = new EmbeddingsAPI();
 
@@ -39,11 +40,15 @@ export /*bundle*/ const uploader = async function (req, res) {
         });
         await Promise.all(promises);
 
-        //TODO agregar llamada a firestore para guardar los archivos subidos
         const response = await model.update(p, { container });
+        model.update(p, { container });
+
+        // publish on firestore
+        const id = await storeKnowledgeBox(container);
 
         res.json({
             status: true,
+            data: { KnowledgeBox: id },
             message: 'File(s) uploaded successfully',
         });
     } catch (error) {

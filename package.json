@@ -1,57 +1,58 @@
 {
-	"name": "@aimpact/documents-api",
-	"version": "1.0.0",
-	"title": "",
-	"description": "",
-	"license": "ISC",
-	"scripts": {
-		"start": "node index.js"
-	},
-	"languages": {
-		"default": "en",
-		"supported": [
-			"en",
-			"es"
-		]
-	},
-	"modules": {
-		"path": "modules"
-	},
-	"deployment": {
-		"distributions": [
-			{
-				"name": "node",
-				"environment": "development",
-				"platform": "node",
-				"ports": {
-					"bundles": 3090,
-					"http": 3091,
-					"inspect": 3092
-				}
-			}
-		]
-	},
-	"dependencies": {
-		"@beyond-js/kernel": "~0.1.8",
-		"@beyond-js/local": "~0.1.3",
-		"@beyond-js/backend": "~0.1.6",
-		"@google-cloud/storage": "^6.10.1",
-		"@pinecone-database/pinecone": "^0.1.5",
-		"@google-cloud/functions-framework": "^3.0.0",
-		"express": "^4.17.1",
-		"firebase": "^9.22.1",
-		"multer": "^1.4.5-lts.1",
-		"socket.io-client": "^4.5.4",
-		"uuid": "^9.0.0",
-		"marked": "^5.0.2",
-		"openai": "^3.2.1",
-		"dotenv": "^16.0.3",
-		"langchain": "^0.0.75",
-		"mammoth": "^1.5.1",
-		"pdf-parse": "1.1.1"
-	},
-	"devDependencies": {
-		"@types/express": "^4.17.13",
-		"@types/node": "^16.11.7"
-	}
+    "name": "@aimpact/documents-api",
+    "version": "1.0.0",
+    "title": "",
+    "description": "",
+    "license": "ISC",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "languages": {
+        "default": "en",
+        "supported": [
+            "en",
+            "es"
+        ]
+    },
+    "modules": {
+        "path": "modules"
+    },
+    "deployment": {
+        "distributions": [
+            {
+                "name": "node",
+                "environment": "development",
+                "platform": "node",
+                "ports": {
+                    "bundles": 3090,
+                    "http": 3091,
+                    "inspect": 3092
+                }
+            }
+        ]
+    },
+    "dependencies": {
+        "@beyond-js/kernel": "~0.1.8",
+        "@beyond-js/local": "~0.1.3",
+        "@beyond-js/backend": "~0.1.6",
+        "@google-cloud/storage": "^6.10.1",
+        "@pinecone-database/pinecone": "^0.1.5",
+        "@google-cloud/functions-framework": "^3.0.0",
+        "express": "^4.17.1",
+        "firebase": "^9.22.1",
+        "firebase-admin": "^11.4.1",
+        "multer": "^1.4.5-lts.1",
+        "socket.io-client": "^4.5.4",
+        "uuid": "^9.0.0",
+        "marked": "^5.0.2",
+        "openai": "^3.2.1",
+        "dotenv": "^16.0.3",
+        "langchain": "^0.0.75",
+        "mammoth": "^1.5.1",
+        "pdf-parse": "1.1.1"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.13",
+        "@types/node": "^16.11.7"
+    }
 }
