@@ -7,13 +7,13 @@ initializeApp(getFirebaseConfig());
 
 const db = getFirestore();
 const table = 'KnowledgeBoxes';
-export const storeKnowledgeBox = async container => {
-    if (!container) return false;
+export const storeKnowledgeBox = async ({ container, userId, knowledgeBoxId }) => {
+    if (knowledgeBoxId) return knowledgeBoxId;
 
     const collection = db.collection(table);
 
     const id = uuidv4();
-    const data = { id: id, path: container };
-    const item = await collection.doc(id).set(data);
+    const data = { id, userId, path: container };
+    await collection.doc(id).set(data);
     return id;
 };
