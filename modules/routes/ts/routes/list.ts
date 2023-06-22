@@ -28,6 +28,7 @@ export /*bundle*/ const list = async function (req, res) {
         const filesRefs = await fileManager.filterFiles(filter);
         const folders = new Map();
         folders.set('general', []);
+
         filesRefs.forEach(file => {
             let name = file.name
                 .replace(finalPath, '')
@@ -35,7 +36,8 @@ export /*bundle*/ const list = async function (req, res) {
                 .filter(i => i !== '');
 
             if (name.length > 1) {
-                const folder = folders.has(name) ? folders.get(name[0]) : [];
+                const folder = folders.has(name[0]) ? folders.get(name[0]) : [];
+
                 folder.push({ name: name[name.length - 1], path: file.name });
                 folders.set(name[0], folder);
                 return;
@@ -43,12 +45,13 @@ export /*bundle*/ const list = async function (req, res) {
             folders.get('general').push({ name: name[0], path: file.name });
             return;
         });
+
         const files = [];
         folders.forEach((items, folder) => files.push({ name: folder, items }));
 
         return res.json({ status: true, data: { files } });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error saving embeds');
+        res.status(500).send('Error list documents');
     }
 };

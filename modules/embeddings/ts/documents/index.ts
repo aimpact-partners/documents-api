@@ -20,7 +20,7 @@ export /*bundle*/ class DocsManager {
     async prepare(path: string, metadata = {}) {
         if (!path) return { status: false, error: 'path not defined' };
 
-        this.#path = path.replace(/\//g, '\\');
+        this.#path = path.replace(/\\/g, '/');
         const tempPath = await downloadFiles(this.#path);
 
         console.log('Docs api - docs prepare', tempPath);
