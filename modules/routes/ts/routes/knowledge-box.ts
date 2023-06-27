@@ -14,6 +14,11 @@ interface ISpecs {
 	knowledgeBoxId?: string;
 	docs: any[];
 }
+
+export const setKnowledgeBox = async function (id, data) {
+	const collection = db.collection(table);
+	await collection.doc(id).update(data);
+};
 export const storeKnowledgeBox = async ({ container, userId, knowledgeBoxId, docs }: ISpecs) => {
 	const collection = db.collection(table);
 	if (!knowledgeBoxId) {
@@ -26,7 +31,7 @@ export const storeKnowledgeBox = async ({ container, userId, knowledgeBoxId, doc
 	const batch = db.batch();
 
 	const documentsSubcollection = collection.doc(knowledgeBoxId).collection('documents');
-	console.log(3, documentsSubcollection);
+
 	for (let docData of docs) {
 		let newDocRef = documentsSubcollection.doc();
 		batch.set(newDocRef, docData);
