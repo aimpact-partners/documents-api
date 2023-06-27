@@ -44,8 +44,8 @@ export /*bundle*/ const uploader = async function (req, res) {
 		const filePaths = [];
 		Object.values(req.files).forEach(file => {
 			// @ts-ignore
-			const { path, originalname, mimetype } = file;
-			console.log(0.1, file);
+			const { path, size, originalname, mimetype } = file;
+
 			const name = `${generateCustomName(originalname)}${getExtension(mimetype)}`;
 			let dest = join(project, userId, type, container, name);
 			filePaths.push({ path: dest, originalname, size, mimetype, name });
@@ -56,7 +56,6 @@ export /*bundle*/ const uploader = async function (req, res) {
 		});
 		await Promise.all(promises);
 
-		console.log(0.2, knowledgeBoxId);
 		// publish on firestore
 		const id = await storeKnowledgeBox({ container, userId, knowledgeBoxId, docs: filePaths });
 
