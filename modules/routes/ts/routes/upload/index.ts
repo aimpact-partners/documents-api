@@ -7,9 +7,8 @@ const setName = (req: Request, file: multer.File, cb: (error: Error | null, file
 	cb(null, name);
 };
 
+const storage = multer.memoryStorage();
 export const upload = multer({
-	storage: multer.diskStorage({
-		destination: 'uploads',
-		filename: setName,
-	}),
+	storage,
+	fileName: setName,
 });

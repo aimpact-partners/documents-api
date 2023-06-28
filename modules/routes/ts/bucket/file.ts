@@ -11,9 +11,27 @@ export class FilestoreFile {
 		this.storage = new Storage();
 	}
 
-	async upload(path: string, destination: string): Promise<string> {
+	async upload(uploaded, path: string, destination: string): Promise<string> {
 		const bucketName = getFirebaseConfig().storageBucket;
-		await this.storage.bucket(bucketName).upload(path, { destination });
+		const file = this.storage.bucket(bucketName).file(destination);
+		//await this.storage.bucket(bucketName).upload(path, { destination });
+
+		return new Promise((resolve, reject) => {
+			const stream = file.createWriteStream({
+				metadata: {
+					contentType: uploaded.mimetype,
+				},
+			});
+			stream.on('error', err => {
+				console.error(err);
+				reject(err);
+			});
+			stream.on('finish', () => {
+				resolve(destination);
+			});
+			stream.end(uploaded.buffer);
+		});
+
 		return destination;
 	}
 

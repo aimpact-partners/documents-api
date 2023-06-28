@@ -43,18 +43,19 @@ export /*bundle*/ const uploader = async function (req, res) {
 		const promises = [];
 
 		const filePaths = [];
-		const pathsToDelete = [];
 		Object.values(req.files).forEach(file => {
 			// @ts-ignore
-			const { path, size, originalname, mimetype } = file;
+
+			const { path, size, originalname, mimetype, buffer } = file;
+
 			const name = `${generateCustomName(originalname)}${getExtension(mimetype)}`;
 			let dest = join(project, userId, type, container, name);
 			const createdAt: number = new Date().getTime();
 			filePaths.push({ path: dest, originalname, size, mimetype, name, createdAt });
 			dest = dest.replace(/\\/g, '/');
-			pathsToDelete.push(path);
+
 			const fileManager = new FilestoreFile();
-			promises.push(fileManager.upload(path, dest));
+			promises.push(fileManager.upload(file, path, dest));
 		});
 		await Promise.all(promises);
 
@@ -73,9 +74,6 @@ export /*bundle*/ const uploader = async function (req, res) {
 			}
 		})();
 
-		const deletePromises = pathsToDelete.map(path => fs.unlink(path));
-		await Promise.all(deletePromises);
-		console.log(10);
 		res.json({
 			status: true,
 			data: { knowledgeBoxId: id, message: 'File(s) uploaded successfully' },
