@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const run = () => {
-    upload();
+    upload;
     uploader();
 };
 
