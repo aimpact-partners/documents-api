@@ -1,0 +1,9 @@
+{
+    "name": "cloud-functions/upload",
+    "start": {
+        "ts": {
+            "path": "/start/ts",
+            "files": ["*"]
+        }
+    }
+}

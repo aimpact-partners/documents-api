@@ -3,4 +3,5 @@ import { list } from '@aimpact/documents-api/routes';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-process.env.FUNCTION_REGION && functions.http('documents-api-list', list);
+const { FUNCTION_REGION, CLOUD_FUNCTION_NAME } = process.env;
+FUNCTION_REGION && CLOUD_FUNCTION_NAME === 'list' && functions.http('list', list);
