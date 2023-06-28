@@ -19,11 +19,13 @@ export const setKnowledgeBox = async function (id, data) {
 	const collection = db.collection(table);
 	await collection.doc(id).update(data);
 };
+
 export const storeKnowledgeBox = async ({ container, userId, knowledgeBoxId, docs }: ISpecs) => {
 	const collection = db.collection(table);
 	if (!knowledgeBoxId) {
 		const id = uuidv4();
-		const data = { id, userId, path: container };
+		const timeCreated: number = new Date().getTime();
+		const data = { id, userId, path: container, timeCreated };
 		await collection.doc(id).set(data);
 		knowledgeBoxId = id;
 	}

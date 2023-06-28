@@ -1,8 +1,8 @@
 import { join } from 'path';
-import { FilestoreFile } from '../bucket/file';
+import { FilestoreFile } from '../../bucket/file';
 import { setKnowledgeBox, storeKnowledgeBox } from './knowledge-box';
-import { getExtension } from './utils/get-extension';
-import { generateCustomName } from './utils/generate-name';
+import { getExtension } from '../utils/get-extension';
+import { generateCustomName } from '../utils/generate-name';
 import { EmbeddingsAPI } from '@aimpact/documents-api/embeddings';
 import { promises as fs } from 'fs';
 const model = new EmbeddingsAPI();
@@ -47,11 +47,10 @@ export /*bundle*/ const uploader = async function (req, res) {
 		Object.values(req.files).forEach(file => {
 			// @ts-ignore
 			const { path, size, originalname, mimetype } = file;
-			console.log(99, file);
-
 			const name = `${generateCustomName(originalname)}${getExtension(mimetype)}`;
 			let dest = join(project, userId, type, container, name);
-			filePaths.push({ path: dest, originalname, size, mimetype, name });
+			const createdAt: number = new Date().getTime();
+			filePaths.push({ path: dest, originalname, size, mimetype, name, createdAt });
 			dest = dest.replace(/\\/g, '/');
 			pathsToDelete.push(path);
 			const fileManager = new FilestoreFile();
@@ -76,12 +75,13 @@ export /*bundle*/ const uploader = async function (req, res) {
 
 		const deletePromises = pathsToDelete.map(path => fs.unlink(path));
 		await Promise.all(deletePromises);
+		console.log(10);
 		res.json({
 			status: true,
 			data: { knowledgeBoxId: id, message: 'File(s) uploaded successfully' },
 		});
 	} catch (error) {
-		console.error(error);
+		console.log(500, error);
 		res.json({
 			status: false,
 			error: `Error uploading file(s): ${error.message}`,
