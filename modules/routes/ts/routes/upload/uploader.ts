@@ -15,11 +15,8 @@ const model = new EmbeddingsAPI();
  * @returns
  */
 export /*bundle*/ const uploader = async function (req, res) {
-	if (req.method !== 'POST') {
-		return res.status(404).send({ status: false, error: 'Invalid call' });
-	}
-
 	const { project, type, container, userId, knowledgeBoxId } = req.body;
+	console.log(req);
 	try {
 		const promises = [];
 
@@ -27,21 +24,19 @@ export /*bundle*/ const uploader = async function (req, res) {
 
 		const bb = Busboy({ headers: req.headers, body: req.body });
 		bb.on('field', (name, val, info) => {
-			console.log(35, name, val, info);
+			console.log(35, name, typeof val, info);
 		});
 		bb.on('file', (name, file, info) => {
-			console.log('se carga', name, file, info);
+			console.log(36, 'se carga', name);
 		});
-		req.pipe(bb);
-		bb.end();
 
-		res.json({
-			status: true,
-			data: { message: 'File(s) uploaded successfully' },
+		bb.on('finish', function () {
+			console.log('Upload complete');
+			res.writeHead(200, { Connection: 'close' });
+			res.end("That's all folks!");
 		});
-		return;
-
-		Object.values(req.files).forEach(file => {
+		return req.pipe(bb);
+		/* 	Object.values(req.files).forEach(file => {
 			// @ts-ignore
 
 			const { path, size, originalname, mimetype, buffer } = file;
@@ -75,7 +70,7 @@ export /*bundle*/ const uploader = async function (req, res) {
 		res.json({
 			status: true,
 			data: { knowledgeBoxId: id, message: 'File(s) uploaded successfully' },
-		});
+	 	});*/
 	} catch (error) {
 		console.log(500, error);
 		res.json({
