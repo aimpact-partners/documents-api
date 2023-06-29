@@ -4,7 +4,8 @@ import { setKnowledgeBox, storeKnowledgeBox } from './knowledge-box';
 import { getExtension } from '../utils/get-extension';
 import { generateCustomName } from '../utils/generate-name';
 import { EmbeddingsAPI } from '@aimpact/documents-api/embeddings';
-import { promises as fs } from 'fs';
+import * as Busboy from 'busboy';
+
 const model = new EmbeddingsAPI();
 
 /**
@@ -14,35 +15,32 @@ const model = new EmbeddingsAPI();
  * @returns
  */
 export /*bundle*/ const uploader = async function (req, res) {
-	if (!req.files.length) {
-		return res.status(400).send({ status: false, error: 'No file was uploaded' });
+	if (req.method !== 'POST') {
+		return res.status(404).send({ status: false, error: 'Invalid call' });
 	}
-	if (!req.body.type) {
-		return res.status(400).send({ status: false, error: 'type is required' });
-	}
-	if (!req.body.userId) {
-		return res.status(400).send({ status: false, error: 'user is required' });
-	}
-	if (!req.body.project) {
-		return res.status(400).send({ status: false, error: 'project is required' });
-	}
-	if (!req.body.container) {
-		return res.status(400).send({ status: false, error: 'container is required' });
-	}
-
-	/**
-	 * project: project name
-	 * type: document, audio,
-	 * container: folder name to organize
-	 * userId
-	 * knowledgeBoxId: knowledge base identifier, can be empty if a new one is being created
-	 */
 
 	const { project, type, container, userId, knowledgeBoxId } = req.body;
 	try {
 		const promises = [];
 
 		const filePaths = [];
+
+		const bb = Busboy({ headers: req.headers, body: req.body });
+		bb.on('field', (name, val, info) => {
+			console.log(35, name, val, info);
+		});
+		bb.on('file', (name, file, info) => {
+			console.log('se carga', name, file, info);
+		});
+		req.pipe(bb);
+		bb.end();
+
+		res.json({
+			status: true,
+			data: { message: 'File(s) uploaded successfully' },
+		});
+		return;
+
 		Object.values(req.files).forEach(file => {
 			// @ts-ignore
 

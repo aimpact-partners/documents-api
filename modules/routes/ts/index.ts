@@ -10,5 +10,5 @@ function routes(app) {
 	app.post('/embedding', embedding);
 	app.get('/list', list);
 	app.delete('/delete', deleteDocuments);
-	app.post('/upload', upload.array('file'), uploader);
+	app.post('/upload', uploader);
 }
