@@ -1,12 +1,19 @@
 import { join } from 'path';
 import { FilestoreFile } from '../../bucket/file';
 import { setKnowledgeBox, storeKnowledgeBox } from './knowledge-box';
-import { getExtension } from '../utils/get-extension';
-import { generateCustomName } from '../utils/generate-name';
 import { EmbeddingsAPI } from '@aimpact/documents-api/embeddings';
 import * as Busboy from 'busboy';
+import * as stream from 'stream';
 
 const model = new EmbeddingsAPI();
+
+interface IFileSpecs {
+    project?: string;
+    type?: string;
+    container?: string;
+    userId?: string;
+    knowledgeBoxId?: string;
+}
 
 /**
  *
@@ -15,67 +22,79 @@ const model = new EmbeddingsAPI();
  * @returns
  */
 export /*bundle*/ const uploader = async function (req, res) {
-	const { project, type, container, userId, knowledgeBoxId } = req.body;
-	console.log(req);
-	try {
-		const promises = [];
+    const fields: IFileSpecs = {};
+    const promises = [];
+    const fileWrites = [];
+    try {
+        const filePaths = [];
+        const fileManager = new FilestoreFile();
+        const bb = Busboy({ headers: req.headers });
 
-		const filePaths = [];
+        bb.on('field', (name, val, info) => (fields[name] = val));
+        bb.on('file', (nameV, file, info) => {
+            const { filename } = info;
+            const fileProm = new Promise((resolve, reject) => {
+                const pass = new stream.PassThrough();
+                file.pipe(pass);
+                fileWrites.push({ file: pass, filename: filename });
+                resolve(true);
+            });
+            promises.push(fileProm);
+        });
 
-		const bb = Busboy({ headers: req.headers, body: req.body });
-		bb.on('field', (name, val, info) => {
-			console.log(35, name, typeof val, info);
-		});
-		bb.on('file', (name, file, info) => {
-			console.log(36, 'se carga', name);
-		});
+        // Escuchar el evento 'finish' cuando la carga del formulario está completa
+        bb.on('finish', async () => {
+            const { project, userId, type, container, knowledgeBoxId } = fields;
+            // Ensure all fields are provided
+            if (!project || !userId || !type || !container) {
+                return res.json({
+                    status: false,
+                    error: `Error uploading files: All fields (project, user, type, container) are required`,
+                });
+            }
 
-		bb.on('finish', function () {
-			console.log('Upload complete');
-			res.writeHead(200, { Connection: 'close' });
-			res.end("That's all folks!");
-		});
-		return req.pipe(bb);
-		/* 	Object.values(req.files).forEach(file => {
-			// @ts-ignore
+            await Promise.all(promises);
 
-			const { path, size, originalname, mimetype, buffer } = file;
+            const bucketName = join(project, userId, type, container);
+            fileWrites.map(async ({ file, filename }) => {
+                let destination = join(bucketName, filename);
+                destination = destination.replace(/\\/g, '/');
+                const blob = fileManager.getFile(destination);
+                const blobStream = blob.createWriteStream();
+                file.pipe(blobStream);
+                await new Promise((resolve, reject) => {
+                    blobStream.on('error', reject);
+                    blobStream.on('finish', resolve);
+                });
+            });
 
-			const name = `${generateCustomName(originalname)}${getExtension(mimetype)}`;
-			let dest = join(project, userId, type, container, name);
-			const createdAt: number = new Date().getTime();
-			filePaths.push({ path: dest, originalname, size, mimetype, name, createdAt });
-			dest = dest.replace(/\\/g, '/');
+            // publish on firestore
+            const id = await storeKnowledgeBox({ container, userId, knowledgeBoxId, docs: filePaths });
 
-			const fileManager = new FilestoreFile();
-			promises.push(fileManager.upload(file, path, dest));
-		});
-		await Promise.all(promises);
+            // update embedding
+            (async () => {
+                try {
+                    const response = await model.update(join(project, userId, type, container), { container });
+                    if (!response.status) setKnowledgeBox(id, { status: 'failed' });
+                    else setKnowledgeBox(id, { status: 'ready' });
+                } catch (e) {
+                    setKnowledgeBox(id, { status: 'failed' });
+                }
+            })();
 
-		// publish on firestore
-		const id = await storeKnowledgeBox({ container, userId, knowledgeBoxId, docs: filePaths });
+            // res.writeHead(200, { Connection: 'close' });
+            return res.json({
+                status: true,
+                data: { knowledgeBoxId: id, message: 'File(s) uploaded successfully' },
+            });
+        });
 
-		const p = join(project, userId, type, container);
-		//update embedding
-		(async () => {
-			try {
-				const response = await model.update(p, { container });
-				if (!response.status) setKnowledgeBox(id, { status: 'failed' });
-				else setKnowledgeBox(id, { status: 'ready' });
-			} catch (e) {
-				setKnowledgeBox(id, { status: 'failed' });
-			}
-		})();
-
-		res.json({
-			status: true,
-			data: { knowledgeBoxId: id, message: 'File(s) uploaded successfully' },
-	 	});*/
-	} catch (error) {
-		console.log(500, error);
-		res.json({
-			status: false,
-			error: `Error uploading file(s): ${error.message}`,
-		});
-	}
+        bb.end(req.rawBody);
+        return req.pipe(bb);
+    } catch (error) {
+        res.json({
+            status: false,
+            error: `Error uploading file(s): ${error.message}`,
+        });
+    }
 };

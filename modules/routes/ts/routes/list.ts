@@ -1,17 +1,7 @@
 import { FilestoreFile } from '../bucket/file';
 import { join } from 'path';
 
-const setHeaders = res => {
-    // Set CORS headers
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Methods', 'GET, POST');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.set('Access-Control-Max-Age', '3600');
-};
-
 export /*bundle*/ const list = async function (req, res) {
-    setHeaders(res);
-
     const fileManager = new FilestoreFile();
     const { path = '', project, type, userId } = req.query;
     const TYPES = Object.freeze({
