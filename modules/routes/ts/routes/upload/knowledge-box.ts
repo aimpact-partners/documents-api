@@ -40,6 +40,5 @@ export const storeKnowledgeBox = async ({ container, userId, knowledgeBoxId, doc
 	}
 
 	await batch.commit();
-	console.log(4);
 	return knowledgeBoxId;
 };
