@@ -28,7 +28,6 @@ export /*bundle*/ const uploader = async function (req, res) {
 	const files = [];
 
 	try {
-		const docs = [];
 		const fileManager = new FilestoreFile();
 		const bb = Busboy({ headers: req.headers });
 
@@ -54,6 +53,7 @@ export /*bundle*/ const uploader = async function (req, res) {
 			}
 
 			const bucketName = join(project, userId, type, container);
+			const docs = [];
 			files.map(({ file, filename, mimeType, size }) => {
 				let path = join(bucketName, filename);
 				path = path.replace(/\\/g, '/');
@@ -67,15 +67,21 @@ export /*bundle*/ const uploader = async function (req, res) {
 			});
 
 			// Publish on firestore
+			let kbId;
 			storeKnowledgeBox({ container, userId, knowledgeBoxId, docs })
-				.then(id => model.update(join(project, userId, type, container), { container }))
-				.then(response => setKnowledgeBox(id, { status: response.status ? 'ready' : 'failed' }))
-				.then(() => res.json({
-					status: true,
-					data: { knowledgeBoxId: 'id', message: 'File(s) uploaded successfully' }
-				}))
+				.then(id => {
+					kbId = id;
+					return model.update(join(project, userId, type, container), { container });
+				})
+				.then(response => setKnowledgeBox(kbId, { status: response.status ? 'ready' : 'failed' }))
+				.then(() => {
+					res.json({
+						status: true,
+						data: { knowledgeBoxId: kbId, message: 'File(s) uploaded successfully' }
+					})
+				})
 				.catch(exc => {
-					setKnowledgeBox(id, { status: 'failed' });
+					setKnowledgeBox(kbId, { status: 'failed' });
 					res.json({ status: false, error: 'Error storing knowledge box' });
 				});
 		});
