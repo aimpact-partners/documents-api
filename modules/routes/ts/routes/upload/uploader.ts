@@ -25,28 +25,26 @@ interface IFileSpecs {
 export /*bundle*/ const uploader = async function (req, res) {
 	const fields: IFileSpecs = {};
 	const promises = [];
-	const fileWrites = [];
+	const files = [];
+
 	try {
-		const filePaths = [];
+		const docs = [];
 		const fileManager = new FilestoreFile();
 		const bb = Busboy({ headers: req.headers });
 
 		bb.on('field', (name, val, info) => (fields[name] = val));
+
 		bb.on('file', (nameV, file, info) => {
 			const { filename, mimeType } = info;
-			let size = 0;
-			file.on('data', data => (size += data.length));
-			file.on('end', () => {
-				const fileProm = new Promise((resolve, reject) => {
-					const pass = new stream.PassThrough();
-					file.pipe(pass);
-					fileWrites.push({ file: pass, filename, mimeType, size });
-					resolve(true);
-				});
-				promises.push(fileProm);
-			});
+
+			// todo: @ftovar8 solve size
+
+			const pass = new stream.PassThrough();
+			file.pipe(pass);
+			files.push({ file: pass, filename, mimeType, size: 10 });
 		});
-		bb.on('finish', async () => {
+
+		bb.on('finish', () => {
 			const { project, userId, type, container, knowledgeBoxId } = fields;
 			if (!project || !userId || !type || !container) {
 				return res.json({
@@ -55,10 +53,8 @@ export /*bundle*/ const uploader = async function (req, res) {
 				});
 			}
 
-			await Promise.all(promises);
-
 			const bucketName = join(project, userId, type, container);
-			fileWrites.map(async ({ file, filename, mimeType, size }) => {
+			files.map(({ file, filename, mimeType, size }) => {
 				let path = join(bucketName, filename);
 				path = path.replace(/\\/g, '/');
 				const blob = fileManager.getFile(path);
@@ -67,33 +63,21 @@ export /*bundle*/ const uploader = async function (req, res) {
 
 				const name = `${generateCustomName(filename)}${getExtension(mimeType)}`;
 				const createdAt: number = new Date().getTime();
-				filePaths.push({ name, originalname: filename, path, size, mimeType, createdAt });
-
-				await new Promise((resolve, reject) => {
-					blobStream.on('error', reject);
-					blobStream.on('finish', resolve);
-				});
+				docs.push({ name, originalname: filename, path, size, mimeType, createdAt });
 			});
 
-			// publish on firestore
-			const id = await storeKnowledgeBox({ container, userId, knowledgeBoxId, docs: filePaths });
-
-			// update embedding
-			(async () => {
-				try {
-					const response = await model.update(join(project, userId, type, container), { container });
-					if (!response.status) setKnowledgeBox(id, { status: 'failed' });
-					else setKnowledgeBox(id, { status: 'ready' });
-				} catch (e) {
+			// Publish on firestore
+			storeKnowledgeBox({ container, userId, knowledgeBoxId, docs })
+				.then(id => model.update(join(project, userId, type, container), { container }))
+				.then(response => setKnowledgeBox(id, { status: response.status ? 'ready' : 'failed' }))
+				.then(() => res.json({
+					status: true,
+					data: { knowledgeBoxId: 'id', message: 'File(s) uploaded successfully' }
+				}))
+				.catch(exc => {
 					setKnowledgeBox(id, { status: 'failed' });
-				}
-			})();
-
-			// res.writeHead(200, { Connection: 'close' });
-			return res.json({
-				status: true,
-				data: { knowledgeBoxId: 'id', message: 'File(s) uploaded successfully' },
-			});
+					res.json({ status: false, error: 'Error storing knowledge box' });
+				});
 		});
 
 		// TODO @ftovar8 @jircdev validar el funcionamiento de estos metodos
