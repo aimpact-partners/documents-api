@@ -1,5 +1,5 @@
-import { CharacterTextSplitter } from 'langchain/text_splitter';
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
+import { CharacterTextSplitter } from 'langchain/text_splitter';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { DocxLoader } from 'langchain/document_loaders/fs/docx';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
@@ -23,6 +23,7 @@ export /*bundle*/ class DocsManager {
 		this.#path = path.replace(/\\/g, '/');
 		const tempPath = await downloadFiles(this.#path);
 
+		console.log('tempPath', tempPath);
 		const loader = new DirectoryLoader(tempPath, {
 			'.docx': path => new DocxLoader(path),
 			'.pdf': path => new PDFLoader(path),
@@ -30,6 +31,8 @@ export /*bundle*/ class DocsManager {
 		});
 		this.#items = await loader.loadAndSplit(this.#splitter);
 		this.#items.forEach(item => (item.metadata = Object.assign(item.metadata, metadata)));
+
+		console.log('this.#items', this.#items);
 
 		return { status: true };
 	}

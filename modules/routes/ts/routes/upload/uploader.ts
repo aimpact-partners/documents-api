@@ -7,6 +7,8 @@ import { getExtension } from '../utils/get-extension';
 import { generateCustomName } from '../utils/generate-name';
 import { setKnowledgeBox, storeKnowledgeBox } from './knowledge-box';
 
+console.log('update docs-api/uploader');
+
 const model = new EmbeddingsAPI();
 interface IFileSpecs {
 	project?: string;
@@ -77,8 +79,8 @@ export /*bundle*/ const uploader = async function (req, res) {
 				.then(() => {
 					res.json({
 						status: true,
-						data: { knowledgeBoxId: kbId, message: 'File(s) uploaded successfully' }
-					})
+						data: { knowledgeBoxId: kbId, message: 'File(s) uploaded successfully' },
+					});
 				})
 				.catch(exc => {
 					setKnowledgeBox(kbId, { status: 'failed' });
