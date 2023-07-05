@@ -51,7 +51,8 @@ export /*bundle*/ const uploader = async function (req, res) {
 		const bucketName = join(project, userId, type, container);
 
 		// stroe on temporal directory
-		const tempPath: string = join(os.tmpdir(), bucketName);
+		let tempPath: string = join(os.tmpdir(), bucketName);
+		tempPath = tempPath.replace(/\\/g, '/');
 		fs.mkdirSync(tempPath, { recursive: true });
 
 		const docs = [];
@@ -75,7 +76,7 @@ export /*bundle*/ const uploader = async function (req, res) {
 		storeKnowledgeBox({ container, userId, knowledgeBoxId, docs })
 			.then(id => {
 				kbId = id;
-				return model.update(join(project, userId, type, container), { container });
+				return model.update(tempPath, { container });
 			})
 			.then(response => setKnowledgeBox(kbId, { status: response.status ? 'ready' : 'failed' }))
 			.then(() => {

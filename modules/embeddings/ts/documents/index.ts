@@ -18,21 +18,16 @@ export /*bundle*/ class DocsManager {
 	}
 
 	async prepare(path: string, metadata = {}) {
-		if (!path) return { status: false, error: 'path not defined' };
+		if (!path) return { status: false, error: 'undefined path to embed' };
 
 		this.#path = path.replace(/\\/g, '/');
-		const tempPath = await downloadFiles(this.#path);
-
-		console.log('tempPath', tempPath);
-		const loader = new DirectoryLoader(tempPath, {
+		const loader = new DirectoryLoader(this.#path, {
 			'.docx': path => new DocxLoader(path),
 			'.pdf': path => new PDFLoader(path),
 			'.txt': path => new TextLoader(path),
 		});
 		this.#items = await loader.loadAndSplit(this.#splitter);
 		this.#items.forEach(item => (item.metadata = Object.assign(item.metadata, metadata)));
-
-		console.log('this.#items', this.#items);
 
 		return { status: true };
 	}
