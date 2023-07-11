@@ -98,7 +98,9 @@ export /*bundle*/ const uploader = async function (req, res) {
 		bb.on('finish', onFinish);
 
 		// TODO @ftovar8 @jircdev validar el funcionamiento de estos metodos
-		process.env.CLOUD_FUNCTION ? bb.end(req.rawBody) : req.pipe(bb);
+		console.log('cloud', process.env.CLOUD_FUNCTION);
+		req.pipe(bb);
+		// process.env.CLOUD_FUNCTION ? bb.end(req.rawBody) : req.pipe(bb);
 	} catch (error) {
 		res.json({
 			status: false,
