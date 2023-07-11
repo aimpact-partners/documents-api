@@ -1,0 +1,7 @@
+{
+	"name": "upload",
+	"platforms": ["node"],
+	"ts": {
+		"files": ["*"]
+	}
+}
