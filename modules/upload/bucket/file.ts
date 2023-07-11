@@ -1,18 +1,17 @@
 import { Storage } from '@google-cloud/storage';
-import { initializeApp } from 'firebase/app';
 import { getFirebaseConfig } from '@aimpact/documents-api/firebase-config';
 
 export class BucketFile {
-	private app;
 	private storage;
 
 	constructor() {
-		this.app = initializeApp(getFirebaseConfig());
-		this.storage = new Storage();
+		const { projectId } = getFirebaseConfig();
+		this.storage = new Storage({ projectId });
 	}
 
 	get(destination: string) {
 		const bucketName = getFirebaseConfig().storageBucket;
+		console.log('bucketName', bucketName);
 		const file = this.storage.bucket(bucketName).file(destination);
 		return file;
 	}

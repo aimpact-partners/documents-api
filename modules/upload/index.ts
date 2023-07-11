@@ -86,6 +86,8 @@ export /*bundle*/ const uploader = async function (req, res) {
 				});
 			})
 			.catch(exc => {
+				console.error('[01: error]', exc.message);
+				console.error('[01: trace]', exc);
 				setKnowledgeBox(kbId, { status: 'failed' });
 				res.json({ status: false, error: 'Error storing knowledge box' });
 			});
@@ -98,9 +100,8 @@ export /*bundle*/ const uploader = async function (req, res) {
 		bb.on('finish', onFinish);
 
 		// TODO @ftovar8 @jircdev validar el funcionamiento de estos metodos
-		console.log('cloud', process.env.CLOUD_FUNCTION);
-		req.pipe(bb);
 		// process.env.CLOUD_FUNCTION ? bb.end(req.rawBody) : req.pipe(bb);
+		bb.end(req.rawBody);
 	} catch (error) {
 		res.json({
 			status: false,
