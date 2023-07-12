@@ -3,7 +3,9 @@ import { CharacterTextSplitter } from 'langchain/text_splitter';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { DocxLoader } from 'langchain/document_loaders/fs/docx';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
-import { downloadFiles } from './download';
+
+//TODO @ftovar8 terminar de validar el flujo de carga de documentos antes de eliminar
+// import { downloadFiles } from './download';
 
 export /*bundle*/ class DocsManager {
 	#splitter = new CharacterTextSplitter();

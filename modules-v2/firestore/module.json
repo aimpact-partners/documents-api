@@ -1,0 +1,10 @@
+{
+	"name": "firestore",
+	"platforms": ["node"],
+	"start": {
+		"ts": {
+			"path": "/start/ts",
+			"files": ["*"]
+		}
+	}
+}

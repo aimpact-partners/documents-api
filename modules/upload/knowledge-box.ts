@@ -1,7 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '@aimpact/documents-api/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
 
+/**
+ * To access the firestore database you have to initialize the APP
+ * This was done in the definition of the entrypoint
+ * bundle: '@aimpact/documents-api/initialize'
+ */
+const db = getFirestore();
 const table = 'KnowledgeBoxes';
+
 interface ISpecs {
 	container: string;
 	userId: string;

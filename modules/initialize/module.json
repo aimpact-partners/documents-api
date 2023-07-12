@@ -1,8 +1,7 @@
 {
-	"name": "embeddings",
+	"name": "initialize",
 	"platforms": ["node"],
 	"ts": {
-		"path": "ts",
 		"files": ["*"]
 	}
 }

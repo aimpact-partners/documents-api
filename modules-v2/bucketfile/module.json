@@ -1,5 +1,5 @@
 {
-	"name": "embeddings",
+	"name": "bucketfile",
 	"platforms": ["node"],
 	"ts": {
 		"path": "ts",

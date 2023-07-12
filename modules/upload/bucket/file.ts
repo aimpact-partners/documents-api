@@ -1,24 +1,20 @@
-import { Storage } from '@google-cloud/storage';
 import { join } from 'path';
 import * as dotenv from 'dotenv';
+import { Storage } from '@google-cloud/storage';
 dotenv.config();
 
 export class BucketFile {
-	private storage;
+	private storage: Storage;
 	#storageBucket = process.env.STORAGEBUCKET;
-	constructor() {
-		const credential = join(__dirname, './credentials.json');
-		console.log('credential', credential);
-		console.log('#storageBucket', this.#storageBucket);
 
-		this.storage = new Storage({ keyFilename: credential });
+	constructor() {
+		const credentials = join(__dirname, './credentials.json');
+		this.storage = new Storage({ keyFilename: credentials });
 	}
 
 	get(destination: string) {
 		const bucketName = this.#storageBucket;
-		console.log('bucketName', bucketName);
-		const file = this.storage.bucket(bucketName).file(destination);
-		return file;
+		return this.storage.bucket(bucketName).file(destination);
 	}
 
 	async upload(uploaded, path: string, destination: string): Promise<string> {

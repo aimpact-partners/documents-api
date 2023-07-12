@@ -3,11 +3,11 @@ import * as fs from 'fs';
 import { join } from 'path';
 import * as Busboy from 'busboy';
 import * as stream from 'stream';
-import { EmbeddingsAPI } from '@aimpact/documents-api/embeddings';
 import { BucketFile } from './bucket/file';
 import { getExtension } from './utils/get-extension';
 import { generateCustomName } from './utils/generate-name';
 import { setKnowledgeBox, storeKnowledgeBox } from './knowledge-box';
+import { EmbeddingsAPI } from '@aimpact/documents-api/embeddings';
 
 const model = new EmbeddingsAPI();
 interface IFileSpecs {
@@ -71,31 +71,26 @@ export /*bundle*/ const uploader = async function (req, res) {
 			docs.push({ name, originalname: filename, path, size, mimeType, createdAt });
 		});
 
-		return res.json({
-			status: true,
-			data: { message: 'File(s) uploaded successfully SIN KB ' },
-		});
-
 		// Publish on firestore
-		// let kbId: string;
-		// storeKnowledgeBox({ container, userId, knowledgeBoxId, docs })
-		// 	.then(id => {
-		// 		kbId = id;
-		// 		return model.update(tempPath, { container });
-		// 	})
-		// 	.then(response => setKnowledgeBox(kbId, { status: response.status ? 'ready' : 'failed' }))
-		// 	.then(() => {
-		// 		res.json({
-		// 			status: true,
-		// 			data: { knowledgeBoxId: kbId, message: 'File(s) uploaded successfully' },
-		// 		});
-		// 	})
-		// 	.catch(exc => {
-		// 		console.error('[01: error]', exc.message);
-		// 		console.error('[01: trace]', exc);
-		// 		setKnowledgeBox(kbId, { status: 'failed' });
-		// 		res.json({ status: false, error: 'Error storing knowledge box' });
-		// 	});
+		let kbId: string;
+		storeKnowledgeBox({ container, userId, knowledgeBoxId, docs })
+			.then(id => {
+				kbId = id;
+				return model.update(tempPath, { container });
+			})
+			.then(response => setKnowledgeBox(kbId, { status: response.status ? 'ready' : 'failed' }))
+			.then(() => {
+				res.json({
+					status: true,
+					data: { knowledgeBoxId: kbId, message: 'File(s) uploaded successfully' },
+				});
+			})
+			.catch(exc => {
+				console.error('[01: error]', exc.message);
+				console.error('[01: trace]', exc);
+				setKnowledgeBox(kbId, { status: 'failed' });
+				res.json({ status: false, error: 'Error storing knowledge box' });
+			});
 	};
 
 	try {

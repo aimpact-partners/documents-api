@@ -2,11 +2,12 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Storage } from '@google-cloud/storage';
-import { getFirebaseConfig } from '@aimpact/documents-api/firebase-config';
 
 export async function downloadFiles(prefix: string): Promise<string> {
-	const storage = new Storage();
-	const bucketName = getFirebaseConfig().storageBucket;
+	const credentials = path.join(__dirname, 'credentials.json');
+	const storage = new Storage({ keyFilename: credentials });
+
+	const bucketName = process.env.STORAGEBUCKET;
 	const bucket = storage.bucket(bucketName);
 	const [files] = await bucket.getFiles({ prefix });
 
