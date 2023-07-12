@@ -1,23 +1,28 @@
 import { Storage } from '@google-cloud/storage';
-import { getFirebaseConfig } from '@aimpact/documents-api/firebase-config';
+import { join } from 'path';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export class BucketFile {
 	private storage;
-
+	#storageBucket = process.env.STORAGEBUCKET;
 	constructor() {
-		const { projectId } = getFirebaseConfig();
-		this.storage = new Storage({ projectId });
+		const credential = join(__dirname, './credentials.json');
+		console.log('credential', credential);
+		console.log('#storageBucket', this.#storageBucket);
+
+		this.storage = new Storage({ keyFilename: credential });
 	}
 
 	get(destination: string) {
-		const bucketName = getFirebaseConfig().storageBucket;
+		const bucketName = this.#storageBucket;
 		console.log('bucketName', bucketName);
 		const file = this.storage.bucket(bucketName).file(destination);
 		return file;
 	}
 
 	async upload(uploaded, path: string, destination: string): Promise<string> {
-		const bucketName = getFirebaseConfig().storageBucket;
+		const bucketName = this.#storageBucket;
 		const file = this.storage.bucket(bucketName).file(destination);
 		//await this.storage.bucket(bucketName).upload(path, { destination });
 
@@ -38,7 +43,7 @@ export class BucketFile {
 
 	async filterFiles(prefix: string | undefined) {
 		try {
-			const bucketName = getFirebaseConfig().storageBucket;
+			const bucketName = this.#storageBucket;
 			const bucket = this.storage.bucket(bucketName);
 			const specs = prefix ? { prefix } : {};
 			let [files] = await bucket.getFiles(specs);
