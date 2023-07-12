@@ -1,10 +1,9 @@
+const admin = require('firebase-admin');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
-const admin = require('firebase-admin');
+const credentials = require('./credentials.json');
 
-const credential = require('./credentials.json');
-
-initializeApp({ credential: admin.credential.cert(credential) });
+initializeApp({ credential: admin.credential.cert(credentials) });
 const db = getFirestore();
 
 (async () => {
