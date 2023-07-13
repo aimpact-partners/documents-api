@@ -19,18 +19,27 @@ export /*bundle*/ class DocsManager {
 		return this.#items;
 	}
 
+	/**
+	 *
+	 * @param path temporary directory where files uploaded by the user are stored on disk
+	 * @param metadata contains the metadata to write to the vector
+	 * @returns
+	 */
 	async prepare(path: string, metadata = {}) {
 		if (!path) return { status: false, error: 'undefined path to embed' };
 
-		this.#path = path.replace(/\\/g, '/');
-		const loader = new DirectoryLoader(this.#path, {
-			'.docx': path => new DocxLoader(path),
-			'.pdf': path => new PDFLoader(path),
-			'.txt': path => new TextLoader(path),
-		});
-		this.#items = await loader.loadAndSplit(this.#splitter);
-		this.#items.forEach(item => (item.metadata = Object.assign(item.metadata, metadata)));
-
-		return { status: true };
+		try {
+			this.#path = path.replace(/\\/g, '/');
+			const loader = new DirectoryLoader(this.#path, {
+				'.docx': path => new DocxLoader(path),
+				'.pdf': path => new PDFLoader(path),
+				'.txt': path => new TextLoader(path),
+			});
+			this.#items = await loader.loadAndSplit(this.#splitter);
+			this.#items.forEach(item => (item.metadata = Object.assign(item.metadata, metadata)));
+			return { status: true };
+		} catch (exc) {
+			return { status: false, error: exc.message };
+		}
 	}
 }

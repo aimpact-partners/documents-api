@@ -1,8 +1,7 @@
 {
-	"name": "embeddings",
+	"name": "embedding",
 	"platforms": ["node"],
 	"ts": {
-		"path": "ts",
 		"files": ["*"]
 	}
 }

@@ -1,8 +1,0 @@
-{
-	"name": "bucketfile",
-	"platforms": ["node"],
-	"ts": {
-		"path": "ts",
-		"files": ["*"]
-	}
-}

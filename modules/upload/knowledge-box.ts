@@ -23,10 +23,11 @@ export const setKnowledgeBox = async function (id, data) {
 
 export const storeKnowledgeBox = async ({ container, userId, knowledgeBoxId, docs }: ISpecs) => {
 	const collection = db.collection(table);
+
 	if (!knowledgeBoxId) {
 		const id = uuidv4();
 		const timeCreated: number = new Date().getTime();
-		const data = { id, userId, path: container, timeCreated };
+		const data = { id, userId, path: container, timeCreated, status: 'pending' };
 		await collection.doc(id).set(data);
 		knowledgeBoxId = id;
 	}
@@ -40,5 +41,8 @@ export const storeKnowledgeBox = async ({ container, userId, knowledgeBoxId, doc
 	}
 
 	await batch.commit();
+
+	console.log('return knowledgeBoxId', knowledgeBoxId);
+
 	return knowledgeBoxId;
 };

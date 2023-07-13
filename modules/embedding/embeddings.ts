@@ -35,24 +35,4 @@ export /*bundle*/ class EmbeddingsManager {
 
 		return { status: true, data: { message: 'Updated embeds' } };
 	}
-
-	/**
-	 *
-	 * @deprecated
-	 */
-	// async createIndex(name: string, embedding) {
-	// const docs = this.#chain.documents.items;
-	//create
-	// console.log(2.1, `//create index`, name);
-	// TODO Este codigo puede tardar aproximadamente 1minuto en mostrar el indice luego de generado
-	// const index = await this.#client.createIndex({
-	//   createRequest: {
-	//     name: name,
-	//     dimension: process.env.PINECODE_INDEX_DIMENSION,
-	//     metric: process.env.PINECODE_INDEX_METRIC,
-	//   },
-	// });
-	// console.log(2.2, `// index created:`, index);
-	// await PineconeStore.fromDocuments(docs, embedding, { index });
-	// }
 }
