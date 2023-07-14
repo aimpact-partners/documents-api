@@ -4,10 +4,11 @@ import { join } from 'path';
 import * as Busboy from 'busboy';
 import * as stream from 'stream';
 import { BucketFile } from './bucket/file';
+import config from '@aimpact/documents-api/config';
 import { getExtension } from './utils/get-extension';
+import { CloudTasksClient } from '@google-cloud/tasks';
 import { generateCustomName } from './utils/generate-name';
 import { setKnowledgeBox, storeKnowledgeBox } from './knowledge-box';
-import { CloudTasksClient } from '@google-cloud/tasks';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -82,9 +83,8 @@ export /*bundle*/ const uploader = async function (req, res) {
 		// Publish KnowledgeBox on firestore
 		storeKnowledgeBox({ container, userId, knowledgeBoxId, docs }).then(id => {
 			// Se hace el procesamiento de la task solo cuando se ejecuta desde la cloud function
-			if (process.env.FUNCTION_REGION) {
+			if (process.env.CLOUD_FUNCTION) {
 				// Create a Cloud Task to process the file
-				const url = 'https://ftovar8-friendly-barnacle-976xgqj5v6pfv6j-8080.preview.app.github.dev/embedding';
 
 				const specs = {
 					id,
@@ -95,7 +95,7 @@ export /*bundle*/ const uploader = async function (req, res) {
 				const task = {
 					httpRequest: {
 						httpMethod: 'POST',
-						url,
+						url: config.params.CLOUD_FUNCTION,
 						headers: { 'Content-Type': 'application/json' },
 						body: Buffer.from(JSON.stringify(specs)).toString('base64'),
 					},

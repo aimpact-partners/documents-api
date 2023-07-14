@@ -17,6 +17,9 @@
 	"modules": {
 		"path": "modules"
 	},
+	"params": {
+		"CLOUD_FUNCTION": "https://us-central1-aimpact-partners-dev.cloudfunctions.net/documents"
+	},
 	"deployment": {
 		"distributions": [
 			{
