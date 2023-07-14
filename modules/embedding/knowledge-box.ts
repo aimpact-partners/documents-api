@@ -1,3 +1,4 @@
+import '@aimpact/documents-api/initialize';
 import { getFirestore } from 'firebase-admin/firestore';
 
 /**
