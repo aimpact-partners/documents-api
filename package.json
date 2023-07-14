@@ -5,7 +5,7 @@
 	"description": "",
 	"license": "ISC",
 	"scripts": {
-		"start": "node scripts/index.js functions-framework --target=run"
+		"start": "functions-framework --target=run"
 	},
 	"languages": {
 		"default": "en",
