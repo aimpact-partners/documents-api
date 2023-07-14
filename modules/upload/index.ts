@@ -95,7 +95,7 @@ export /*bundle*/ const uploader = async function (req, res) {
 				const task = {
 					httpRequest: {
 						httpMethod: 'POST',
-						url: config.params.CLOUD_FUNCTION,
+						url: `${config.params.CLOUD_FUNCTION}/embedding`,
 						headers: { 'Content-Type': 'application/json' },
 						body: Buffer.from(JSON.stringify(specs)).toString('base64'),
 					},
