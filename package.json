@@ -1,11 +1,11 @@
 {
 	"name": "@aimpact/documents-api",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"title": "",
 	"description": "",
 	"license": "ISC",
 	"scripts": {
-		"start": "functions-framework --target=run"
+		"start": "node scripts/index.js functions-framework --target=run"
 	},
 	"languages": {
 		"default": "en",

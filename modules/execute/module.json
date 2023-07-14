@@ -1,0 +1,7 @@
+{
+	"name": "execute",
+	"platforms": ["node"],
+	"ts": {
+		"files": ["*"]
+	}
+}
