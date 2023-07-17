@@ -1,9 +1,0 @@
-{
-	"name": "cloud-function",
-	"platforms": ["node"],
-	"start": {
-		"ts": {
-			"files": ["*"]
-		}
-	}
-}

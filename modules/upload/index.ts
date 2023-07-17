@@ -116,7 +116,7 @@ export /*bundle*/ const uploader = async function (req, res) {
 		bb.on('field', (name, val, info) => (fields[name] = val));
 		bb.on('finish', onFinish);
 
-		bb.end(req.rawBody);
+		process.env.CLOUD_FUNCTION ? bb.end(req.rawBody) : req.pipe(bb);
 	} catch (error) {
 		res.json({
 			status: false,

@@ -26,6 +26,7 @@
 				"name": "node",
 				"environment": "development",
 				"platform": "node",
+				"maps": "external",
 				"ports": {
 					"bundles": 3090,
 					"http": 3091,

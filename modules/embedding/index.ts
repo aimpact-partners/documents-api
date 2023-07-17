@@ -10,7 +10,7 @@ dotenv.config();
  * @param res
  * @returns
  */
-export /*bundle*/ const embedding = async function (req, res) {
+export /*bundle*/ const embedding = async (req, res) => {
 	const { id, path, metadata, token } = req.body;
 
 	if (token !== process.env.GCLOUD_INVOKER) {
