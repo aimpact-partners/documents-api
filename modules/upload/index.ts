@@ -83,7 +83,7 @@ export /*bundle*/ const uploader = async function (req, res) {
 		// Publish KnowledgeBox on firestore
 		storeKnowledgeBox({ container, userId, knowledgeBoxId, docs }).then(id => {
 			// Se hace el procesamiento de la task solo cuando se ejecuta desde la cloud function
-			if (process.env.CLOUD_FUNCTION) {
+			if (process.env.CLOUD_RUN) {
 				// Create a Cloud Task to process the file
 
 				const specs = {
@@ -95,7 +95,7 @@ export /*bundle*/ const uploader = async function (req, res) {
 				const task = {
 					httpRequest: {
 						httpMethod: 'POST',
-						url: `${config.params.CLOUD_FUNCTION}/embedding`,
+						url: config.params.EMBEDDING_URL,
 						headers: { 'Content-Type': 'application/json' },
 						body: Buffer.from(JSON.stringify(specs)).toString('base64'),
 					},
@@ -116,7 +116,8 @@ export /*bundle*/ const uploader = async function (req, res) {
 		bb.on('field', (name, val, info) => (fields[name] = val));
 		bb.on('finish', onFinish);
 
-		process.env.CLOUD_FUNCTION ? bb.end(req.rawBody) : req.pipe(bb);
+		// process.env.CLOUD_RUN ? bb.end(req.rawBody) : req.pipe(bb);
+		req.pipe(bb);
 	} catch (error) {
 		res.json({
 			status: false,

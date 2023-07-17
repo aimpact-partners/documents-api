@@ -4,9 +4,6 @@
 	"title": "",
 	"description": "",
 	"license": "ISC",
-	"scripts": {
-		"start": "functions-framework --target=run"
-	},
 	"languages": {
 		"default": "en",
 		"supported": [
@@ -18,7 +15,7 @@
 		"path": "modules"
 	},
 	"params": {
-		"CLOUD_FUNCTION": "https://us-central1-aimpact-partners-dev.cloudfunctions.net/documents"
+		"EMBEDDING_URL": "https://documents-rb5caohzgq-wl.a.run.app/embedding"
 	},
 	"deployment": {
 		"distributions": [
