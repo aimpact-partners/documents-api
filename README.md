@@ -1,16 +1,21 @@
-# documents-api
+## How to run the `Documents API` project
 
 Repository for uploading documents and embedding them in pinecode vectors.
 
-## Steps to run documents-api
+## Copy Environment File
 
-1. Copy and rename `.env-example` file to `.env`
-2. Add all credentials values.
-3. Run `beyond run` on terminal.
-4. Go to BeyondJS workspace(<https://workspace.beyondjs.com>)
-5. Select chat-api package.
-6. Run `node` distribution.
+Locate the `.env-example` file in the root of the project. Create a copy of this file and rename it to `.env`.
 
-## Deploy
+## Add Credentials
 
-## Codespaces
+Open the `.env` file in a text editor. Fill in all the necessary credential values that the application requires.
+
+## Google Cloud Service Account
+
+Make sure you have a service account set up in your Google Cloud project with the appropriate permissions to access the
+required APIs. Obtain the service account credentials JSON file.
+
+## Configure Google Cloud Service Account
+
+Place the service account credentials JSON file you obtained in the previous step into the root of the project. Rename
+the file to `credentials.json`.

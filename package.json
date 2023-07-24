@@ -15,7 +15,12 @@
 		"path": "modules"
 	},
 	"params": {
-		"EMBEDDING_URL": "https://documents-rb5caohzgq-wl.a.run.app/embedding"
+		"development": {
+			"EMBEDDING_API": "https://documents-rb5caohzgq-wl.a.run.app/embedding"
+		},
+		"production": {
+			"EMBEDDING_API": "https://documents-rb5caohzgq-wl.a.run.app/embedding"
+		}
 	},
 	"deployment": {
 		"distributions": [
